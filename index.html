@@ -1,1127 +1,432 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="GlassOS - The future of SaaS analytics. Beautiful dashboards, powerful insights, seamless integration.">
-    <title>GlassOS – Interactive SaaS Analytics Platform</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Каталог фото конспекта</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f4f6f8;
+      --panel: #ffffff;
+      --ink: #1f2937;
+      --muted: #667085;
+      --line: #d7dde5;
+      --accent: #0f766e;
+      --accent-soft: #d9f4ef;
+      --tag: #eef2f6;
+      --tag-hit: #fff1b8;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(244, 246, 248, 0.94);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .bar {
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 18px 18px 14px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 14px;
+      align-items: end;
+    }
+
+    h1 {
+      margin: 0 0 6px;
+      font-size: 24px;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .hint {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .counter {
+      color: var(--muted);
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
+    .search {
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 0 18px 18px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+    }
+
+    input {
+      width: 100%;
+      height: 44px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 0 14px;
+      font-size: 16px;
+      outline: none;
+      background: #fff;
+      color: var(--ink);
+    }
+
+    input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+
+    button {
+      height: 44px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 0 16px;
+      background: #fff;
+      color: var(--ink);
+      cursor: pointer;
+      font-size: 15px;
+    }
+
+    main {
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 18px;
+    }
+
+    .quick-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .quick-tags button {
+      height: 34px;
+      padding: 0 11px;
+      border-color: transparent;
+      background: var(--accent-soft);
+      color: #064e46;
+      font-size: 13px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 16px;
+      align-items: start;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .photo-link {
+      display: block;
+      background: #e8edf3;
+    }
+
+    img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      object-fit: cover;
+    }
+
+    .body {
+      padding: 12px;
+    }
+
+    .name {
+      margin: 0 0 10px;
+      font-size: 14px;
+      font-weight: 700;
+      overflow-wrap: anywhere;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .tag {
+      display: inline-flex;
+      min-height: 26px;
+      align-items: center;
+      border-radius: 999px;
+      background: var(--tag);
+      padding: 4px 9px;
+      color: #344054;
+      font-size: 12px;
+      line-height: 1.2;
+    }
+
+    .tag.hit {
+      background: var(--tag-hit);
+      color: #693b00;
+    }
+
+    .empty {
+      display: none;
+      border: 1px dashed var(--line);
+      border-radius: 8px;
+      padding: 28px;
+      color: var(--muted);
+      text-align: center;
+      background: #fff;
+    }
+
+    @media (max-width: 700px) {
+      .bar,
+      .search {
+        grid-template-columns: 1fr;
+      }
+
+      .counter {
+        white-space: normal;
+      }
+    }
+  </style>
 </head>
-<body data-theme="dark">
-    <!-- ═══════════════════════════════════════════════════════════════════
-         PRELOADER
-    ═══════════════════════════════════════════════════════════════════ -->
-    <div class="preloader" id="preloader">
-        <div class="preloader-content">
-            <div class="preloader-logo">
-                <span class="logo-icon">◈</span>
-                <span class="logo-text">GlassOS</span>
-            </div>
-            <div class="preloader-bar">
-                <div class="preloader-progress"></div>
-            </div>
-            <p class="preloader-text">Loading experience...</p>
-        </div>
+<body>
+  <header>
+    <div class="bar">
+      <div>
+        <h1>Каталог фото конспекта</h1>
+        <p class="hint">Пиши тему или тег: например, “вольт-амперная”, “диод”, “транзистор”, “триггер”.</p>
+      </div>
+      <div class="counter" id="counter"></div>
     </div>
-
-    <!-- ═══════════════════════════════════════════════════════════════════
-         CUSTOM CURSOR
-    ═══════════════════════════════════════════════════════════════════ -->
-    <div class="cursor" id="cursor"></div>
-    <div class="cursor-follower" id="cursor-follower"></div>
-
-    <!-- ═══════════════════════════════════════════════════════════════════
-         ANIMATED BACKGROUND
-    ═══════════════════════════════════════════════════════════════════ -->
-    <div class="animated-bg">
-        <div class="gradient-orb orb-1"></div>
-        <div class="gradient-orb orb-2"></div>
-        <div class="gradient-orb orb-3"></div>
-        <div class="gradient-orb orb-4"></div>
-        <div class="noise-overlay"></div>
+    <div class="search">
+      <input id="query" type="search" placeholder="Поиск по тегам и названию фото" autocomplete="off">
+      <button id="clear" type="button">Очистить</button>
     </div>
+  </header>
 
-    <!-- ═══════════════════════════════════════════════════════════════════
-         NAVIGATION
-    ═══════════════════════════════════════════════════════════════════ -->
-    <header class="header glass" id="header">
-        <nav class="nav container">
-            <a href="#" class="nav-logo">
-                <span class="logo-icon">◈</span>
-                <span class="logo-text">GlassOS</span>
-            </a>
+  <main>
+    <div class="quick-tags" id="quickTags"></div>
+    <div class="empty" id="empty">Ничего не найдено. Попробуй другое слово или более общий тег.</div>
+    <section class="grid" id="grid"></section>
+  </main>
 
-            <ul class="nav-menu" id="nav-menu">
-                <li class="nav-item"><a href="#features" class="nav-link">Features</a></li>
-                <li class="nav-item"><a href="#demo" class="nav-link">Demo</a></li>
-                <li class="nav-item"><a href="#pricing" class="nav-link">Pricing</a></li>
-                <li class="nav-item"><a href="#testimonials" class="nav-link">Reviews</a></li>
-                <li class="nav-item"><a href="#faq" class="nav-link">FAQ</a></li>
-            </ul>
+  <script>
+    const folder = "=Photo_ex/";
+    const stamp = "2026-07-06_22-38-19";
 
-            <div class="nav-actions">
-                <!-- Theme Switcher -->
-                <div class="theme-switcher">
-                    <button class="theme-btn" id="theme-toggle" aria-label="Change theme">
-                        <span class="theme-icon">◐</span>
-                    </button>
-                    <div class="theme-dropdown" id="theme-dropdown">
-                        <button class="theme-option" data-theme="dark">
-                            <span class="theme-preview dark-preview"></span>
-                            <span>Dark</span>
-                        </button>
-                        <button class="theme-option" data-theme="neon">
-                            <span class="theme-preview neon-preview"></span>
-                            <span>Neon</span>
-                        </button>
-                        <button class="theme-option" data-theme="glass">
-                            <span class="theme-preview glass-preview"></span>
-                            <span>Glass</span>
-                        </button>
-                        <button class="theme-option" data-theme="liquid">
-                            <span class="theme-preview liquid-preview"></span>
-                            <span>Liquid</span>
-                        </button>
-                    </div>
-                </div>
+    const baseTags = ["электроника", "конспект"];
+    const photos = [
+      p(1, ["элементы схем", "резистор", "конденсатор", "катушка индуктивности", "трансформатор", "условные обозначения"]),
+      p(2, ["полупроводники", "диод", "p-n переход", "переход", "обозначения"]),
+      p(3, ["диод", "p-n переход", "выпрямитель", "схема", "ВАХ"]),
+      p(4, ["выпрямитель", "диодный мост", "сглаживающий фильтр", "схема питания"]),
+      p(5, ["диод", "классификация диодов", "параметры диодов", "полупроводниковые приборы"]),
+      p(6, ["диод", "выпрямительный диод", "стабилитрон", "условные обозначения"]),
+      p(7, ["полупроводниковый диод", "прямое включение", "обратное включение", "теория"]),
+      p(8, ["диод", "переход", "выпрямление", "схемы"]),
+      p(9, ["выпрямитель", "схема выпрямителя", "фильтр", "конденсатор"]),
+      p(10, ["диод", "полупроводниковые приборы", "переход", "характеристики"]),
+      p(11, ["диоды", "стабилитрон", "стабилизация напряжения", "характеристики"]),
+      p(12, ["стабилитрон", "схема стабилизации", "ВАХ стабилитрона", "обратный пробой"]),
+      p(13, ["диод", "параметры диодов", "прямой ток", "обратный ток", "статическое сопротивление"]),
+      p(14, ["вольт-амперная характеристика диода", "ВАХ диода", "германиевый диод", "кремниевый диод", "Ge", "Si", "прямой ток", "обратный ток"]),
+      p(15, ["основные параметры диодов", "Uпр max", "Iпр max", "обратный ток", "мощность"]),
+      p(16, ["варикап", "вольт-амперная характеристика", "емкость варикапа", "диод Шоттки", "барьерная емкость"]),
+      p(17, ["диод Шоттки", "контакт металл полупроводник", "быстродействие", "диоды"]),
+      p(18, ["биполярный транзистор", "структура транзистора", "эмиттер", "база", "коллектор"]),
+      p(19, ["биполярный транзистор", "принцип работы БТ", "эмиттер", "база", "коллектор", "ток коллектора"]),
+      p(20, ["транзистор", "коэффициент передачи", "токи транзистора", "параметры БТ"]),
+      p(21, ["транзистор", "схема включения", "общий эмиттер", "характеристики"]),
+      p(22, ["транзистор", "выходные характеристики", "входные характеристики", "графики"]),
+      p(23, ["транзистор", "статические характеристики", "график", "режимы работы"]),
+      p(24, ["транзистор", "схема с общим эмиттером", "усилитель", "характеристики"]),
+      p(25, ["транзистор", "схема включения", "общая база", "общий коллектор"]),
+      p(26, ["полевой транзистор", "канал", "затвор", "исток", "сток"]),
+      p(27, ["полевой транзистор", "ВАХ", "стоковые характеристики", "затвор"]),
+      p(28, ["полевой транзистор", "схема", "переход", "управление током"]),
+      p(29, ["транзистор", "усилительный каскад", "режимы", "схема"]),
+      p(30, ["транзистор", "полевой транзистор", "условные обозначения", "схемы"]),
+      p(31, ["усилители", "транзисторный усилитель", "коэффициент усиления", "сигнал"]),
+      p(32, ["усилитель", "схема усилителя", "нагрузочная прямая", "рабочая точка"]),
+      p(33, ["усилительный каскад", "схема", "резисторы", "конденсаторы"]),
+      p(34, ["режим работы транзистора", "таблица", "ключевой режим", "активный режим"]),
+      p(35, ["схема усилителя", "транзистор", "цепи смещения", "конденсатор"]),
+      p(36, ["усилитель", "графики", "нагрузочная прямая", "амплитуда сигнала"]),
+      p(37, ["усилители", "параметры усилителя", "коэффициент усиления", "частота"]),
+      p(38, ["обратная связь", "усилитель", "ООС", "параметры"]),
+      p(39, ["усилитель", "частотная характеристика", "АЧХ", "график"]),
+      p(40, ["усилитель", "характеристики", "искажения", "сигнал"]),
+      p(41, ["операционный усилитель", "ОУ", "схема", "входы", "выход"]),
+      p(42, ["операционный усилитель", "инвертирующий усилитель", "неинвертирующий усилитель"]),
+      p(43, ["операционный усилитель", "параметры ОУ", "коэффициент усиления", "входное сопротивление"]),
+      p(44, ["компаратор", "операционный усилитель", "схема сравнения", "порог"]),
+      p(45, ["операционный усилитель", "сумматор", "интегратор", "дифференциатор"]),
+      p(46, ["сигналы", "графики сигналов", "импульсы", "форма сигнала"]),
+      p(47, ["логические элементы", "цифровая электроника", "И", "ИЛИ", "НЕ", "схемы"]),
+      p(48, ["логические элементы", "таблица истинности", "цифровые схемы", "вентили"]),
+      p(49, ["цифровая электроника", "логические функции", "таблица", "схемы"]),
+      p(50, ["логические элементы", "триггер", "RS триггер", "схема"]),
+      p(51, ["триггер", "RS триггер", "таблица истинности", "состояния"]),
+      p(52, ["триггер", "D триггер", "временная диаграмма", "синхронизация", "сигнал"]),
+      p(53, ["триггер", "JK триггер", "схема", "цифровые устройства"]),
+      p(54, ["регистры", "триггеры", "цифровые устройства", "память"]),
+      p(55, ["счетчики", "триггеры", "последовательностные схемы", "цифровая электроника"]),
+      p(56, ["счетчик", "двоичный счетчик", "триггеры", "таблица состояний"]),
+      p(57, ["микросхемы", "цифровые устройства", "интегральные схемы", "логика"]),
+      p(58, ["микросхемы", "классификация микросхем", "цифровая техника", "параметры"]),
+      p(59, ["электронные устройства", "цифровая техника", "конспект", "теория"]),
+      p(60, ["микропроцессор", "микроконтроллер", "цифровая система", "блок схема"]),
+      p(61, ["К155", "К561", "маркировка микросхем", "серии микросхем"]),
+      p(62, ["микросхемы", "корпус", "выводы", "условное обозначение"]),
+      p(63, ["цифровая схема", "элементы логики", "соединения", "схема"]),
+      p(64, ["цифровая схема", "логические элементы", "триггеры", "схема"]),
+      p(65, ["цифровая схема", "логика", "таблица", "схема"]),
+      p(66, ["схема", "логические элементы", "цифровое устройство", "входы выходы"]),
+      p(67, ["аналоговые устройства", "электроника", "параметры", "теория"]),
+      p(68, ["схема", "электронный узел", "диоды", "транзисторы"]),
+      p(69, ["цифровая схема", "блок схема", "логический узел", "элементы"]),
+      p(70, ["цифровые устройства", "схема", "логика", "таблица"]),
+      p(71, ["микропроцессорная техника", "память", "шина", "система"]),
+      p(72, ["блок схема", "микропроцессор", "структура", "устройство"]),
+      p(73, ["цифровая схема", "схема соединений", "микросхема", "выводы"]),
+      p(74, ["цифровая электроника", "схема", "триггеры", "логика"]),
+      p(75, ["регистр", "счетчик", "схема", "последовательностная логика"]),
+      p(76, ["цифровая техника", "схема", "таблица", "конспект"]),
+      p(77, ["схема", "логические элементы", "цифровой автомат", "таблица"]),
+      p(78, ["регистр сдвига", "триггеры", "схема", "последовательное соединение"]),
+      p(79, ["цифровая схема", "таблица", "логические элементы", "формулы"]),
+      p(80, ["график", "диаграмма", "цифровой сигнал", "временная диаграмма"]),
+      p(81, ["логические элементы", "схема", "цифровая электроника", "итоговый конспект"])
+    ];
 
-                <a href="#pricing" class="btn btn-primary btn-nav">
-                    <span>Get Started</span>
-                    <span class="btn-shine"></span>
-                </a>
-            </div>
+    const popular = [
+      "вольт-амперная характеристика диода",
+      "диод",
+      "варикап",
+      "стабилитрон",
+      "транзистор",
+      "усилитель",
+      "операционный усилитель",
+      "логические элементы",
+      "триггер",
+      "микросхемы"
+    ];
 
-            <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu">
-                <span class="hamburger"></span>
-            </button>
-        </nav>
-    </header>
+    const grid = document.getElementById("grid");
+    const query = document.getElementById("query");
+    const clear = document.getElementById("clear");
+    const counter = document.getElementById("counter");
+    const empty = document.getElementById("empty");
+    const quickTags = document.getElementById("quickTags");
 
-    <!-- ═══════════════════════════════════════════════════════════════════
-         MOBILE MENU
-    ═══════════════════════════════════════════════════════════════════ -->
-    <div class="mobile-menu glass" id="mobile-menu">
-        <ul class="mobile-nav">
-            <li><a href="#features" class="mobile-link">Features</a></li>
-            <li><a href="#demo" class="mobile-link">Demo</a></li>
-            <li><a href="#pricing" class="mobile-link">Pricing</a></li>
-            <li><a href="#testimonials" class="mobile-link">Reviews</a></li>
-            <li><a href="#faq" class="mobile-link">FAQ</a></li>
-        </ul>
-        <a href="#pricing" class="btn btn-primary btn-mobile">Get Started Free</a>
-    </div>
+    function p(number, tags) {
+      const name = `photo_${number}_${stamp}.jpg`;
+      return {
+        number,
+        name,
+        src: folder + name,
+        tags: [...baseTags, ...tags]
+      };
+    }
 
-    <!-- ═══════════════════════════════════════════════════════════════════
-         HERO SECTION
-    ═══════════════════════════════════════════════════════════════════ -->
-    <section class="hero" id="hero">
-        <div class="container">
-            <div class="hero-content reveal">
-                <div class="hero-badge glass">
-                    <span class="badge-dot"></span>
-                    <span>Now in Public Beta – 50% off for early adopters</span>
-                </div>
-                
-                <h1 class="hero-title">
-                    Analytics That Feel
-                    <span class="gradient-text">Like Magic</span>
-                </h1>
-                
-                <p class="hero-description">
-                    Transform raw data into beautiful insights. GlassOS combines 
-                    cutting-edge visualization with AI-powered analytics to help 
-                    you make smarter decisions, faster.
-                </p>
+    function normalize(text) {
+      return text.toLowerCase().replace(/ё/g, "е").trim();
+    }
 
-                <div class="hero-cta">
-                    <button class="btn btn-primary btn-large" onclick="GlassOS.modal.open('signup')">
-                        <span>Start Free Trial</span>
-                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M5 12h14M12 5l7 7-7 7"/>
-                        </svg>
-                        <span class="btn-shine"></span>
-                    </button>
-                    <button class="btn btn-glass btn-large" onclick="GlassOS.modal.open('demo')">
-                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polygon points="5 3 19 12 5 21 5 3"/>
-                        </svg>
-                        <span>Watch Demo</span>
-                    </button>
-                </div>
+    function render() {
+      const raw = query.value;
+      const q = normalize(raw);
+      const words = q.split(/\s+/).filter(Boolean);
+      const result = photos.filter(photo => {
+        if (!words.length) return true;
+        const haystack = normalize([photo.name, ...photo.tags].join(" "));
+        return words.every(word => haystack.includes(word));
+      });
 
-                <div class="hero-social-proof">
-                    <div class="avatar-stack">
-                        <img src="https://i.pravatar.cc/100?img=1" alt="User" class="avatar">
-                        <img src="https://i.pravatar.cc/100?img=2" alt="User" class="avatar">
-                        <img src="https://i.pravatar.cc/100?img=3" alt="User" class="avatar">
-                        <img src="https://i.pravatar.cc/100?img=4" alt="User" class="avatar">
-                        <span class="avatar avatar-more">+2k</span>
-                    </div>
-                    <div class="social-proof-text">
-                        <div class="stars">★★★★★</div>
-                        <span>Trusted by 2,000+ teams worldwide</span>
-                    </div>
-                </div>
-            </div>
+      grid.innerHTML = "";
+      empty.style.display = result.length ? "none" : "block";
+      counter.textContent = `Показано ${result.length} из ${photos.length}`;
 
-            <div class="hero-visual reveal reveal-delay-1">
-                <div class="dashboard-preview glass">
-                    <div class="preview-header">
-                        <div class="preview-dots">
-                            <span class="dot red"></span>
-                            <span class="dot yellow"></span>
-                            <span class="dot green"></span>
-                        </div>
-                        <span class="preview-title">GlassOS Dashboard</span>
-                    </div>
-                    <div class="preview-content">
-                        <div class="mini-chart" id="hero-chart"></div>
-                        <div class="preview-stats">
-                            <div class="mini-stat">
-                                <span class="mini-stat-value counter" data-target="12847">0</span>
-                                <span class="mini-stat-label">Active Users</span>
-                            </div>
-                            <div class="mini-stat">
-                                <span class="mini-stat-value">+<span class="counter" data-target="34">0</span>%</span>
-                                <span class="mini-stat-label">Growth</span>
-                            </div>
-                            <div class="mini-stat">
-                                <span class="mini-stat-value">$<span class="counter" data-target="89">0</span>k</span>
-                                <span class="mini-stat-label">Revenue</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="floating-card card-1 glass">
-                    <span class="floating-icon">📊</span>
-                    <span>Real-time sync</span>
-                </div>
-                <div class="floating-card card-2 glass">
-                    <span class="floating-icon">🚀</span>
-                    <span>10x faster</span>
-                </div>
-                <div class="floating-card card-3 glass">
-                    <span class="floating-icon">🔒</span>
-                    <span>SOC 2 Certified</span>
-                </div>
-            </div>
-        </div>
-    </section>
+      for (const photo of result) {
+        const article = document.createElement("article");
+        article.className = "card";
 
-    <!-- ═══════════════════════════════════════════════════════════════════
-         FEATURES SECTION
-    ═══════════════════════════════════════════════════════════════════ -->
-    <section class="features" id="features">
-        <div class="container">
-            <div class="section-header reveal">
-                <span class="section-badge glass">Features</span>
-                <h2 class="section-title">Everything You Need to <span class="gradient-text">Scale</span></h2>
-                <p class="section-description">
-                    Powerful features designed for modern teams. From real-time analytics 
-                    to AI-powered insights, we've got you covered.
-                </p>
-            </div>
+        const link = document.createElement("a");
+        link.className = "photo-link";
+        link.href = photo.src;
+        link.target = "_blank";
 
-            <div class="features-grid">
-                <div class="feature-card glass reveal" data-tilt>
-                    <div class="feature-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                            <path d="M3 3v18h18"/>
-                            <path d="M18 9l-5 5-4-4-3 3"/>
-                        </svg>
-                    </div>
-                    <h3 class="feature-title">Real-time Analytics</h3>
-                    <p class="feature-description">
-                        Watch your data update in real-time. No more waiting for reports 
-                        or refreshing dashboards manually.
-                    </p>
-                    <a href="#" class="feature-link">
-                        Learn more
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M5 12h14M12 5l7 7-7 7"/>
-                        </svg>
-                    </a>
-                </div>
+        const img = document.createElement("img");
+        img.src = photo.src;
+        img.alt = photo.tags.join(", ");
+        img.loading = "lazy";
+        link.appendChild(img);
 
-                <div class="feature-card glass reveal reveal-delay-1" data-tilt>
-                    <div class="feature-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                            <circle cx="12" cy="12" r="10"/>
-                            <path d="M12 6v6l4 2"/>
-                        </svg>
-                    </div>
-                    <h3 class="feature-title">Automated Reports</h3>
-                    <p class="feature-description">
-                        Schedule reports and have them delivered to your inbox. 
-                        Daily, weekly, or monthly – you choose.
-                    </p>
-                    <a href="#" class="feature-link">
-                        Learn more
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M5 12h14M12 5l7 7-7 7"/>
-                        </svg>
-                    </a>
-                </div>
+        const body = document.createElement("div");
+        body.className = "body";
 
-                <div class="feature-card glass reveal reveal-delay-2" data-tilt>
-                    <div class="feature-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                            <path d="M12 2a10 10 0 1 0 10 10"/>
-                            <path d="M12 6a6 6 0 0 1 6 6"/>
-                            <circle cx="12" cy="12" r="2"/>
-                        </svg>
-                    </div>
-                    <h3 class="feature-title">AI Insights</h3>
-                    <p class="feature-description">
-                        Our AI analyzes patterns and surfaces insights you might miss. 
-                        Get actionable recommendations automatically.
-                    </p>
-                    <a href="#" class="feature-link">
-                        Learn more
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M5 12h14M12 5l7 7-7 7"/>
-                        </svg>
-                    </a>
-                </div>
+        const name = document.createElement("p");
+        name.className = "name";
+        name.textContent = photo.name;
 
-                <div class="feature-card glass reveal" data-tilt>
-                    <div class="feature-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                            <rect x="3" y="3" width="7" height="7" rx="1"/>
-                            <rect x="14" y="3" width="7" height="7" rx="1"/>
-                            <rect x="3" y="14" width="7" height="7" rx="1"/>
-                            <rect x="14" y="14" width="7" height="7" rx="1"/>
-                        </svg>
-                    </div>
-                    <h3 class="feature-title">Custom Dashboards</h3>
-                    <p class="feature-description">
-                        Drag and drop widgets to create the perfect dashboard. 
-                        Save views and share with your team.
-                    </p>
-                    <a href="#" class="feature-link">
-                        Learn more
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M5 12h14M12 5l7 7-7 7"/>
-                        </svg>
-                    </a>
-                </div>
+        const tags = document.createElement("div");
+        tags.className = "tags";
 
-                <div class="feature-card glass reveal reveal-delay-1" data-tilt>
-                    <div class="feature-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                            <circle cx="9" cy="7" r="4"/>
-                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                        </svg>
-                    </div>
-                    <h3 class="feature-title">Team Collaboration</h3>
-                    <p class="feature-description">
-                        Invite unlimited team members. Set permissions, share insights, 
-                        and collaborate in real-time.
-                    </p>
-                    <a href="#" class="feature-link">
-                        Learn more
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M5 12h14M12 5l7 7-7 7"/>
-                        </svg>
-                    </a>
-                </div>
+        for (const tagText of photo.tags) {
+          const tag = document.createElement("span");
+          tag.className = "tag";
+          if (q && normalize(tagText).includes(q)) tag.classList.add("hit");
+          tag.textContent = "#" + tagText;
+          tags.appendChild(tag);
+        }
 
-                <div class="feature-card glass reveal reveal-delay-2" data-tilt>
-                    <div class="feature-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                            <path d="M9 12l2 2 4-4"/>
-                        </svg>
-                    </div>
-                    <h3 class="feature-title">Enterprise Security</h3>
-                    <p class="feature-description">
-                        SOC 2 Type II certified. Your data is encrypted at rest 
-                        and in transit. SSO and 2FA included.
-                    </p>
-                    <a href="#" class="feature-link">
-                        Learn more
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M5 12h14M12 5l7 7-7 7"/>
-                        </svg>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </section>
+        body.appendChild(name);
+        body.appendChild(tags);
+        article.appendChild(link);
+        article.appendChild(body);
+        grid.appendChild(article);
+      }
+    }
 
-    <!-- ═══════════════════════════════════════════════════════════════════
-         LIVE DEMO DASHBOARD SECTION
-    ═══════════════════════════════════════════════════════════════════ -->
-    <section class="demo-section" id="demo">
-        <div class="container">
-            <div class="section-header reveal">
-                <span class="section-badge glass">Live Demo</span>
-                <h2 class="section-title">Experience the <span class="gradient-text">Dashboard</span></h2>
-                <p class="section-description">
-                    Interactive preview of your future analytics command center. 
-                    This is just a glimpse of what's possible.
-                </p>
-            </div>
+    for (const tag of popular) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.textContent = "#" + tag;
+      button.addEventListener("click", () => {
+        query.value = tag;
+        render();
+        query.focus();
+      });
+      quickTags.appendChild(button);
+    }
 
-            <div class="demo-dashboard glass reveal">
-                <div class="demo-sidebar glass">
-                    <div class="demo-logo">
-                        <span class="logo-icon">◈</span>
-                    </div>
-                    <nav class="demo-nav">
-                        <button class="demo-nav-item active" data-tab="overview">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect x="3" y="3" width="7" height="7"/>
-                                <rect x="14" y="3" width="7" height="7"/>
-                                <rect x="14" y="14" width="7" height="7"/>
-                                <rect x="3" y="14" width="7" height="7"/>
-                            </svg>
-                        </button>
-                        <button class="demo-nav-item" data-tab="analytics">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M3 3v18h18"/>
-                                <path d="M18 9l-5 5-4-4-3 3"/>
-                            </svg>
-                        </button>
-                        <button class="demo-nav-item" data-tab="users">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                                <circle cx="9" cy="7" r="4"/>
-                            </svg>
-                        </button>
-                        <button class="demo-nav-item" data-tab="settings">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="12" cy="12" r="3"/>
-                                <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
-                            </svg>
-                        </button>
-                    </nav>
-                </div>
+    query.addEventListener("input", render);
+    clear.addEventListener("click", () => {
+      query.value = "";
+      render();
+      query.focus();
+    });
 
-                <div class="demo-main">
-                    <div class="demo-header">
-                        <div class="demo-search glass">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="11" cy="11" r="8"/>
-                                <path d="M21 21l-4.35-4.35"/>
-                            </svg>
-                            <input type="text" placeholder="Search anything...">
-                        </div>
-                        <div class="demo-header-actions">
-                            <button class="demo-notif">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-                                    <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-                                </svg>
-                                <span class="notif-dot"></span>
-                            </button>
-                            <div class="demo-user">
-                                <img src="https://i.pravatar.cc/100?img=8" alt="User">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="demo-content">
-                        <div class="demo-welcome">
-                            <h3>Good morning, Alex! 👋</h3>
-                            <p>Here's what's happening with your projects today.</p>
-                        </div>
-
-                        <div class="demo-stats-grid">
-                            <div class="demo-stat-card glass">
-                                <div class="demo-stat-icon blue">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                                        <circle cx="9" cy="7" r="4"/>
-                                    </svg>
-                                </div>
-                                <div class="demo-stat-info">
-                                    <span class="demo-stat-value counter" data-target="8249">0</span>
-                                    <span class="demo-stat-label">Total Users</span>
-                                </div>
-                                <span class="demo-stat-change positive">+12.5%</span>
-                            </div>
-                            <div class="demo-stat-card glass">
-                                <div class="demo-stat-icon green">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <line x1="12" y1="1" x2="12" y2="23"/>
-                                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-                                    </svg>
-                                </div>
-                                <div class="demo-stat-info">
-                                    <span class="demo-stat-value">$<span class="counter" data-target="142">0</span>k</span>
-                                    <span class="demo-stat-label">Revenue</span>
-                                </div>
-                                <span class="demo-stat-change positive">+8.2%</span>
-                            </div>
-                            <div class="demo-stat-card glass">
-                                <div class="demo-stat-icon purple">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M3 3v18h18"/>
-                                        <path d="M18 9l-5 5-4-4-3 3"/>
-                                    </svg>
-                                </div>
-                                <div class="demo-stat-info">
-                                    <span class="demo-stat-value"><span class="counter" data-target="94">0</span>%</span>
-                                    <span class="demo-stat-label">Conversion</span>
-                                </div>
-                                <span class="demo-stat-change positive">+3.1%</span>
-                            </div>
-                            <div class="demo-stat-card glass">
-                                <div class="demo-stat-icon orange">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <circle cx="12" cy="12" r="10"/>
-                                        <path d="M12 6v6l4 2"/>
-                                    </svg>
-                                </div>
-                                <div class="demo-stat-info">
-                                    <span class="demo-stat-value"><span class="counter" data-target="2">0</span>m <span class="counter" data-target="34">0</span>s</span>
-                                    <span class="demo-stat-label">Avg. Session</span>
-                                </div>
-                                <span class="demo-stat-change negative">-2.4%</span>
-                            </div>
-                        </div>
-
-                        <div class="demo-charts-grid">
-                            <div class="demo-chart-card glass">
-                                <div class="chart-header">
-                                    <h4>Revenue Overview</h4>
-                                    <div class="chart-legend">
-                                        <span class="legend-item"><span class="legend-dot blue"></span>Revenue</span>
-                                        <span class="legend-item"><span class="legend-dot green"></span>Profit</span>
-                                    </div>
-                                </div>
-                                <canvas id="revenue-chart" width="600" height="250"></canvas>
-                            </div>
-                            <div class="demo-chart-card glass">
-                                <div class="chart-header">
-                                    <h4>Traffic Sources</h4>
-                                </div>
-                                <canvas id="traffic-chart" width="300" height="250"></canvas>
-                                <div class="donut-legend">
-                                    <span class="legend-item"><span class="legend-dot" style="background: #6366f1"></span>Organic (45%)</span>
-                                    <span class="legend-item"><span class="legend-dot" style="background: #8b5cf6"></span>Direct (30%)</span>
-                                    <span class="legend-item"><span class="legend-dot" style="background: #a855f7"></span>Referral (25%)</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ═══════════════════════════════════════════════════════════════════
-         STATS SECTION
-    ═══════════════════════════════════════════════════════════════════ -->
-    <section class="stats-section" id="stats">
-        <div class="container">
-            <div class="stats-grid reveal">
-                <div class="stat-item glass">
-                    <span class="stat-value"><span class="counter" data-target="99">0</span>.<span class="counter" data-target="9">0</span>%</span>
-                    <span class="stat-label">Uptime SLA</span>
-                </div>
-                <div class="stat-item glass">
-                    <span class="stat-value"><span class="counter" data-target="50">0</span>M+</span>
-                    <span class="stat-label">Events Tracked Daily</span>
-                </div>
-                <div class="stat-item glass">
-                    <span class="stat-value"><span class="counter" data-target="2000">0</span>+</span>
-                    <span class="stat-label">Happy Customers</span>
-                </div>
-                <div class="stat-item glass">
-                    <span class="stat-value">&lt;<span class="counter" data-target="100">0</span>ms</span>
-                    <span class="stat-label">Avg Response Time</span>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ═══════════════════════════════════════════════════════════════════
-         PRICING SECTION
-    ═══════════════════════════════════════════════════════════════════ -->
-    <section class="pricing-section" id="pricing">
-        <div class="container">
-            <div class="section-header reveal">
-                <span class="section-badge glass">Pricing</span>
-                <h2 class="section-title">Simple, <span class="gradient-text">Transparent</span> Pricing</h2>
-                <p class="section-description">
-                    No hidden fees. No surprises. Choose the plan that fits your needs 
-                    and scale as you grow.
-                </p>
-            </div>
-
-            <!-- Pricing Calculator -->
-            <div class="pricing-calculator glass reveal">
-                <div class="calculator-header">
-                    <h3>Calculate Your Price</h3>
-                    <p>Adjust the slider to see how pricing scales with your usage</p>
-                </div>
-                <div class="calculator-body">
-                    <div class="calculator-slider">
-                        <label>Monthly Active Users</label>
-                        <input type="range" id="users-slider" min="1000" max="100000" value="10000" step="1000">
-                        <div class="slider-labels">
-                            <span>1k</span>
-                            <span id="current-users">10,000</span>
-                            <span>100k</span>
-                        </div>
-                    </div>
-                    <div class="calculator-result">
-                        <div class="result-price">
-                            <span class="currency">$</span>
-                            <span class="price-value" id="calculated-price">79</span>
-                            <span class="period">/month</span>
-                        </div>
-                        <p class="price-note">Includes all features • Unlimited team members</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="pricing-grid reveal">
-                <!-- Starter Plan -->
-                <div class="pricing-card glass">
-                    <div class="pricing-header">
-                        <h3 class="plan-name">Starter</h3>
-                        <p class="plan-description">Perfect for small teams just getting started</p>
-                    </div>
-                    <div class="pricing-price">
-                        <span class="currency">$</span>
-                        <span class="amount">29</span>
-                        <span class="period">/month</span>
-                    </div>
-                    <ul class="pricing-features">
-                        <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Up to 5,000 MAU</li>
-                        <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>5 team members</li>
-                        <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Basic analytics</li>
-                        <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Email support</li>
-                        <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>7-day data retention</li>
-                    </ul>
-                    <button class="btn btn-glass btn-full" onclick="GlassOS.toast.show('Starting Starter plan signup...', 'success')">
-                        Get Started
-                    </button>
-                </div>
-
-                <!-- Pro Plan (Popular) -->
-                <div class="pricing-card glass popular">
-                    <div class="popular-badge">Most Popular</div>
-                    <div class="pricing-header">
-                        <h3 class="plan-name">Pro</h3>
-                        <p class="plan-description">For growing teams that need more power</p>
-                    </div>
-                    <div class="pricing-price">
-                        <span class="currency">$</span>
-                        <span class="amount">79</span>
-                        <span class="period">/month</span>
-                    </div>
-                    <ul class="pricing-features">
-                        <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Up to 25,000 MAU</li>
-                        <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Unlimited team members</li>
-                        <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Advanced analytics</li>
-                        <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Priority support</li>
-                        <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>90-day data retention</li>
-                        <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Custom dashboards</li>
-                        <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>API access</li>
-                    </ul>
-                    <button class="btn btn-primary btn-full" onclick="GlassOS.modal.open('signup')">
-                        Start Free Trial
-                        <span class="btn-shine"></span>
-                    </button>
-                </div>
-
-                <!-- Enterprise Plan -->
-                <div class="pricing-card glass">
-                    <div class="pricing-header">
-                        <h3 class="plan-name">Enterprise</h3>
-                        <p class="plan-description">For large organizations with custom needs</p>
-                    </div>
-                    <div class="pricing-price">
-                        <span class="amount">Custom</span>
-                    </div>
-                    <ul class="pricing-features">
-                        <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Unlimited MAU</li>
-                        <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Unlimited everything</li>
-                        <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Custom integrations</li>
-                        <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Dedicated support</li>
-                        <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Unlimited retention</li>
-                        <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>SSO & SAML</li>
-                        <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>SLA guarantee</li>
-                    </ul>
-                    <button class="btn btn-glass btn-full" onclick="GlassOS.modal.open('contact')">
-                        Contact Sales
-                    </button>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ═══════════════════════════════════════════════════════════════════
-         TESTIMONIALS SECTION
-    ═══════════════════════════════════════════════════════════════════ -->
-    <section class="testimonials-section" id="testimonials">
-        <div class="container">
-            <div class="section-header reveal">
-                <span class="section-badge glass">Testimonials</span>
-                <h2 class="section-title">Loved by <span class="gradient-text">Teams</span> Worldwide</h2>
-                <p class="section-description">
-                    Don't just take our word for it. Here's what our customers have to say.
-                </p>
-            </div>
-
-            <div class="testimonials-slider reveal">
-                <div class="testimonials-track" id="testimonials-track">
-                    <div class="testimonial-card glass">
-                        <div class="testimonial-content">
-                            <div class="testimonial-stars">★★★★★</div>
-                            <p class="testimonial-text">
-                                "GlassOS completely transformed how we understand our users. 
-                                The real-time analytics are incredibly powerful, and the 
-                                interface is just beautiful."
-                            </p>
-                        </div>
-                        <div class="testimonial-author">
-                            <img src="https://i.pravatar.cc/100?img=11" alt="Sarah Chen">
-                            <div class="author-info">
-                                <span class="author-name">Sarah Chen</span>
-                                <span class="author-role">Head of Product, TechFlow</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="testimonial-card glass">
-                        <div class="testimonial-content">
-                            <div class="testimonial-stars">★★★★★</div>
-                            <p class="testimonial-text">
-                                "We tried every analytics tool out there. GlassOS is the 
-                                only one that our entire team actually enjoys using. 
-                                The AI insights are game-changing."
-                            </p>
-                        </div>
-                        <div class="testimonial-author">
-                            <img src="https://i.pravatar.cc/100?img=12" alt="Marcus Johnson">
-                            <div class="author-info">
-                                <span class="author-name">Marcus Johnson</span>
-                                <span class="author-role">CEO, LaunchPad</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="testimonial-card glass">
-                        <div class="testimonial-content">
-                            <div class="testimonial-stars">★★★★★</div>
-                            <p class="testimonial-text">
-                                "Setup took 5 minutes and we had actionable insights within 
-                                an hour. The ROI on GlassOS is insane. Best investment 
-                                we've made this year."
-                            </p>
-                        </div>
-                        <div class="testimonial-author">
-                            <img src="https://i.pravatar.cc/100?img=25" alt="Emily Rodriguez">
-                            <div class="author-info">
-                                <span class="author-name">Emily Rodriguez</span>
-                                <span class="author-role">Growth Lead, ScaleUp</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="testimonial-card glass">
-                        <div class="testimonial-content">
-                            <div class="testimonial-stars">★★★★★</div>
-                            <p class="testimonial-text">
-                                "The customer support is phenomenal. They helped us migrate 
-                                from our old system in a day. I can't recommend GlassOS 
-                                enough!"
-                            </p>
-                        </div>
-                        <div class="testimonial-author">
-                            <img src="https://i.pravatar.cc/100?img=32" alt="David Park">
-                            <div class="author-info">
-                                <span class="author-name">David Park</span>
-                                <span class="author-role">CTO, FinanceApp</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="slider-controls">
-                    <button class="slider-btn prev" id="slider-prev" aria-label="Previous">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M19 12H5M12 19l-7-7 7-7"/>
-                        </svg>
-                    </button>
-                    <div class="slider-dots" id="slider-dots"></div>
-                    <button class="slider-btn next" id="slider-next" aria-label="Next">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M5 12h14M12 5l7 7-7 7"/>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ═══════════════════════════════════════════════════════════════════
-         FAQ SECTION
-    ═══════════════════════════════════════════════════════════════════ -->
-    <section class="faq-section" id="faq">
-        <div class="container">
-            <div class="section-header reveal">
-                <span class="section-badge glass">FAQ</span>
-                <h2 class="section-title">Frequently Asked <span class="gradient-text">Questions</span></h2>
-                <p class="section-description">
-                    Everything you need to know about GlassOS. Can't find an answer? 
-                    <a href="#" onclick="GlassOS.modal.open('contact')">Contact our team</a>.
-                </p>
-            </div>
-
-            <div class="faq-grid reveal">
-                <div class="faq-item glass">
-                    <button class="faq-question">
-                        <span>How does the 14-day free trial work?</span>
-                        <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M6 9l6 6 6-6"/>
-                        </svg>
-                    </button>
-                    <div class="faq-answer">
-                        <p>
-                            Start your free trial with no credit card required. You'll have 
-                            full access to all Pro features for 14 days. At the end of your 
-                            trial, you can choose to upgrade to a paid plan or continue with 
-                            limited free access.
-                        </p>
-                    </div>
-                </div>
-
-                <div class="faq-item glass">
-                    <button class="faq-question">
-                        <span>Can I change plans later?</span>
-                        <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M6 9l6 6 6-6"/>
-                        </svg>
-                    </button>
-                    <div class="faq-answer">
-                        <p>
-                            Absolutely! You can upgrade, downgrade, or cancel your plan at 
-                            any time from your account settings. Changes take effect immediately, 
-                            and we'll prorate any differences.
-                        </p>
-                    </div>
-                </div>
-
-                <div class="faq-item glass">
-                    <button class="faq-question">
-                        <span>What happens if I exceed my MAU limit?</span>
-                        <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M6 9l6 6 6-6"/>
-                        </svg>
-                    </button>
-                    <div class="faq-answer">
-                        <p>
-                            We'll never cut off your data. If you exceed your limit, we'll 
-                            send you a friendly notification and work with you to find the 
-                            right plan. There's always a 10% buffer before any action is needed.
-                        </p>
-                    </div>
-                </div>
-
-                <div class="faq-item glass">
-                    <button class="faq-question">
-                        <span>Is my data secure?</span>
-                        <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M6 9l6 6 6-6"/>
-                        </svg>
-                    </button>
-                    <div class="faq-answer">
-                        <p>
-                            Security is our top priority. We're SOC 2 Type II certified, 
-                            GDPR compliant, and use AES-256 encryption for all data. Our 
-                            infrastructure is hosted on AWS with multiple redundancies.
-                        </p>
-                    </div>
-                </div>
-
-                <div class="faq-item glass">
-                    <button class="faq-question">
-                        <span>Do you offer refunds?</span>
-                        <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M6 9l6 6 6-6"/>
-                        </svg>
-                    </button>
-                    <div class="faq-answer">
-                        <p>
-                            Yes! We offer a 30-day money-back guarantee on all plans. If 
-                            you're not completely satisfied, contact us within 30 days of 
-                            purchase for a full refund, no questions asked.
-                        </p>
-                    </div>
-                </div>
-
-                <div class="faq-item glass">
-                    <button class="faq-question">
-                        <span>What integrations do you support?</span>
-                        <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M6 9l6 6 6-6"/>
-                        </svg>
-                    </button>
-                    <div class="faq-answer">
-                        <p>
-                            We integrate with 50+ popular tools including Slack, Zapier, 
-                            Segment, HubSpot, Salesforce, and more. Our REST API also 
-                            allows you to build custom integrations.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ═══════════════════════════════════════════════════════════════════
-         CTA SECTION
-    ═══════════════════════════════════════════════════════════════════ -->
-    <section class="cta-section" id="cta">
-        <div class="container">
-            <div class="cta-content glass reveal">
-                <h2 class="cta-title">Ready to Transform Your <span class="gradient-text">Analytics</span>?</h2>
-                <p class="cta-description">
-                    Join 2,000+ teams already using GlassOS to make smarter decisions. 
-                    Start your free trial today – no credit card required.
-                </p>
-                <div class="cta-buttons">
-                    <button class="btn btn-primary btn-large" onclick="GlassOS.modal.open('signup')">
-                        <span>Start Free Trial</span>
-                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M5 12h14M12 5l7 7-7 7"/>
-                        </svg>
-                        <span class="btn-shine"></span>
-                    </button>
-                    <button class="btn btn-glass btn-large" onclick="GlassOS.modal.open('contact')">
-                        Talk to Sales
-                    </button>
-                </div>
-                <p class="cta-note">✓ 14-day free trial &nbsp;&nbsp; ✓ No credit card required &nbsp;&nbsp; ✓ Cancel anytime</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- ═══════════════════════════════════════════════════════════════════
-         FOOTER
-    ═══════════════════════════════════════════════════════════════════ -->
-    <footer class="footer" id="footer">
-        <div class="container">
-            <div class="footer-grid">
-                <div class="footer-brand">
-                    <a href="#" class="nav-logo">
-                        <span class="logo-icon">◈</span>
-                        <span class="logo-text">GlassOS</span>
-                    </a>
-                    <p class="footer-description">
-                        Beautiful analytics for modern teams. Transform your data 
-                        into actionable insights with our powerful platform.
-                    </p>
-                    <div class="footer-social">
-                        <a href="#" class="social-link" aria-label="Twitter">
-                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-                        </a>
-                        <a href="#" class="social-link" aria-label="LinkedIn">
-                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-                        </a>
-                        <a href="#" class="social-link" aria-label="GitHub">
-                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
-                        </a>
-                    </div>
-                </div>
-
-                <div class="footer-links">
-                    <h4>Product</h4>
-                    <ul>
-                        <li><a href="#features">Features</a></li>
-                        <li><a href="#pricing">Pricing</a></li>
-                        <li><a href="#">Integrations</a></li>
-                        <li><a href="#">Changelog</a></li>
-                        <li><a href="#">Roadmap</a></li>
-                    </ul>
-                </div>
-
-                <div class="footer-links">
-                    <h4>Company</h4>
-                    <ul>
-                        <li><a href="#">About</a></li>
-                        <li><a href="#">Blog</a></li>
-                        <li><a href="#">Careers</a></li>
-                        <li><a href="#">Press Kit</a></li>
-                        <li><a href="#">Contact</a></li>
-                    </ul>
-                </div>
-
-                <div class="footer-links">
-                    <h4>Resources</h4>
-                    <ul>
-                        <li><a href="#">Documentation</a></li>
-                        <li><a href="#">API Reference</a></li>
-                        <li><a href="#">Status Page</a></li>
-                        <li><a href="#">Community</a></li>
-                        <li><a href="#">Support</a></li>
-                    </ul>
-                </div>
-
-                <div class="footer-newsletter">
-                    <h4>Stay Updated</h4>
-                    <p>Get the latest news and updates delivered to your inbox.</p>
-                    <form class="newsletter-form" id="newsletter-form">
-                        <div class="newsletter-input-group glass">
-                            <input type="email" placeholder="Enter your email" required>
-                            <button type="submit" class="btn btn-primary">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M5 12h14M12 5l7 7-7 7"/>
-                                </svg>
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            <div class="footer-bottom">
-                <p>&copy; 2024 GlassOS. All rights reserved.</p>
-                <div class="footer-legal">
-                    <a href="#">Privacy Policy</a>
-                    <a href="#">Terms of Service</a>
-                    <a href="#">Cookie Policy</a>
-                </div>
-            </div>
-        </div>
-    </footer>
-
-    <!-- ═══════════════════════════════════════════════════════════════════
-         FLOATING ACTION BUTTON
-    ═══════════════════════════════════════════════════════════════════ -->
-    <button class="fab glass" id="fab" aria-label="Quick actions">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 5v14M5 12h14"/>
-        </svg>
-    </button>
-
-    <div class="fab-menu" id="fab-menu">
-        <button class="fab-item glass" onclick="GlassOS.modal.open('contact')" data-tooltip="Contact Us">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-            </svg>
-        </button>
-        <button class="fab-item glass" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" data-tooltip="Back to Top">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M18 15l-6-6-6 6"/>
-            </svg>
-        </button>
-        <button class="fab-item glass" onclick="GlassOS.modal.open('demo')" data-tooltip="Watch Demo">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polygon points="5 3 19 12 5 21 5 3"/>
-            </svg>
-        </button>
-    </div>
-
-    <!-- ═══════════════════════════════════════════════════════════════════
-         MODALS
-    ═══════════════════════════════════════════════════════════════════ -->
-    <div class="modal-overlay" id="modal-overlay">
-        <!-- Signup Modal -->
-        <div class="modal glass" id="modal-signup">
-            <button class="modal-close" onclick="GlassOS.modal.close()">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M18 6L6 18M6 6l12 12"/>
-                </svg>
-            </button>
-            <div class="modal-content">
-                <h3 class="modal-title">Start Your Free Trial</h3>
-                <p class="modal-description">No credit card required. Get started in minutes.</p>
-                <form class="modal-form" onsubmit="GlassOS.handleSignup(event)">
-                    <div class="form-group">
-                        <label for="signup-name">Full Name</label>
-                        <input type="text" id="signup-name" placeholder="John Doe" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="signup-email">Work Email</label>
-                        <input type="email" id="signup-email" placeholder="john@company.com" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="signup-password">Password</label>
-                        <input type="password" id="signup-password" placeholder="••••••••" required minlength="8">
-                    </div>
-                    <button type="submit" class="btn btn-primary btn-full">
-                        <span>Create Account</span>
-                        <span class="btn-shine"></span>
-                    </button>
-                </form>
-                <p class="modal-footer-text">
-                    Already have an account? <a href="#" onclick="GlassOS.modal.open('login')">Sign in</a>
-                </p>
-            </div>
-        </div>
-
-        <!-- Demo Modal -->
-        <div class="modal glass" id="modal-demo">
-            <button class="modal-close" onclick="GlassOS.modal.close()">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M18 6L6 18M6 6l12 12"/>
-                </svg>
-            </button>
-            <div class="modal-content modal-video">
-                <div class="video-placeholder">
-                    <div class="play-button">
-                        <svg viewBox="0 0 24 24" fill="currentColor">
-                            <polygon points="5 3 19 12 5 21 5 3"/>
-                        </svg>
-                    </div>
-                    <p>Product Demo Video</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Contact Modal -->
-        <div class="modal glass" id="modal-contact">
-            <button class="modal-close" onclick="GlassOS.modal.close()">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M18 6L6 18M6 6l12 12"/>
-                </svg>
-            </button>
-            <div class="modal-content">
-                <h3 class="modal-title">Contact Sales</h3>
-                <p class="modal-description">Tell us about your needs and we'll get back to you within 24 hours.</p>
-                <form class="modal-form" onsubmit="GlassOS.handleContact(event)">
-                    <div class="form-group">
-                        <label for="contact-name">Full Name</label>
-                        <input type="text" id="contact-name" placeholder="John Doe" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="contact-email">Work Email</label>
-                        <input type="email" id="contact-email" placeholder="john@company.com" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="contact-company">Company</label>
-                        <input type="text" id="contact-company" placeholder="Acme Inc">
-                    </div>
-                    <div class="form-group">
-                        <label for="contact-message">Message</label>
-                        <textarea id="contact-message" placeholder="Tell us about your needs..." rows="4"></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary btn-full">
-                        <span>Send Message</span>
-                        <span class="btn-shine"></span>
-                    </button>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- ═══════════════════════════════════════════════════════════════════
-         TOAST CONTAINER
-    ═══════════════════════════════════════════════════════════════════ -->
-    <div class="toast-container" id="toast-container"></div>
-
-    <!-- Scripts -->
-    <script src="script.js"></script>
+    render();
+  </script>
 </body>
 </html>
